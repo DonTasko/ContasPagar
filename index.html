@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sistema de Contas a Pagar | Registro e Consulta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #eef2f7;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* cabeçalho */
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1f6e8c, #0e4b64);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitulo {
+            color: #4a627a;
+            margin-bottom: 1.8rem;
+            border-left: 4px solid #2c8fbb;
+            padding-left: 0.8rem;
+            font-weight: 450;
+        }
+
+        /* cartão formulário */
+        .form-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem 1.5rem;
+            align-items: end;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-field label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2c3e50;
+            letter-spacing: 0.3px;
+        }
+
+        .form-field input, .form-field select {
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #cfdfed;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            background: #ffffff;
+            transition: 0.2s;
+        }
+
+        .form-field input:focus {
+            outline: none;
+            border-color: #2c8fbb;
+            box-shadow: 0 0 0 3px rgba(44, 143, 187, 0.2);
+        }
+
+        .checkbox-field {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-field label {
+            cursor: pointer;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #1f6e8c;
+            border: none;
+            padding: 0.7rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        button:hover {
+            background: #0e5a75;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #5f7f9e;
+        }
+
+        .btn-secondary:hover {
+            background: #3c5a77;
+        }
+
+        .btn-danger {
+            background: #c7443a;
+        }
+
+        .btn-danger:hover {
+            background: #a8342b;
+        }
+
+        .btn-warning {
+            background: #e67e22;
+        }
+
+        .btn-warning:hover {
+            background: #cf711f;
+        }
+
+        /* estatísticas */
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: white;
+            border-radius: 32px;
+            padding: 1rem 2rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2edf2;
+        }
+
+        .stat-card {
+            background: #f9fbfd;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+
+        .stat-card span:first-child {
+            color: #3b6e8b;
+        }
+
+        .stat-card span:last-child {
+            font-weight: 800;
+            color: #1a2c3e;
+            margin-left: 0.6rem;
+            font-size: 1.2rem;
+        }
+
+        /* filtros e ações */
+        .filtro-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filtro-busca {
+            flex: 2;
+            min-width: 200px;
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .filtro-busca input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border-radius: 48px;
+            border: 1px solid #cbdde9;
+            background: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        /* tabela sheet */
+        .table-wrapper {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            border: 1px solid #e2edf2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 700px;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 0.8rem;
+            background-color: #f4f9fe;
+            color: #1f4e6e;
+            font-weight: 700;
+            border-bottom: 2px solid #dce9f0;
+        }
+
+        td {
+            padding: 0.9rem 0.8rem;
+            border-bottom: 1px solid #e9f0f5;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fafeff;
+        }
+
+        .checkbox-liquidar {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #1f6e8c;
+        }
+
+        .acao-botao {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+            margin: 0 2px;
+            box-shadow: none;
+            color: #3c6e8f;
+        }
+
+        .acao-botao.editar {
+            background: #eef2fa;
+            color: #2c6e9e;
+        }
+
+        .acao-botao.excluir {
+            background: #fee9e7;
+            color: #c24134;
+        }
+
+        .acao-botao:hover {
+            transform: scale(1.02);
+        }
+
+        .status-pago {
+            background-color: #e3f7ec;
+            border-radius: 20px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1e7b48;
+            display: inline-block;
+        }
+
+        .status-pendente {
+            background-color: #fff0db;
+            border-radius: 20px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #c95a0f;
+        }
+
+        .valor-moeda {
+            font-weight: 600;
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 2rem;
+            color: #6f8eaa;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6c8dae;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .form-card {
+                padding: 1rem;
+            }
+            .stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📆 Contas a Pagar</h1>
+    <div class="subtitulo">Registro, liquidação e consulta em planilha</div>
+
+    <!-- FORMULÁRIO DE REGISTRO -->
+    <div class="form-card">
+        <form id="contaForm">
+            <div class="form-row">
+                <div class="form-field">
+                    <label>📅 Data</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-field">
+                    <label>📝 Descrição</label>
+                    <input type="text" id="descricao" placeholder="Ex: Energia elétrica" required>
+                </div>
+                <div class="form-field">
+                    <label>💰 Valor (R$)</label>
+                    <input type="number" id="valor" step="0.01" placeholder="0,00" required>
+                </div>
+                <div class="form-field">
+                    <label>🏢 Entidade</label>
+                    <input type="text" id="entidade" placeholder="Fornecedor / Empresa" required>
+                </div>
+                <div class="form-field">
+                    <label>🔖 Referência</label>
+                    <input type="text" id="referencia" placeholder="Fatura / Pedido" required>
+                </div>
+                <div class="form-field checkbox-field">
+                    <input type="checkbox" id="liquidadoCheck">
+                    <label>✅ Liquidado (pago)</label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="btnSalvar">➕ Adicionar Conta</button>
+                <button type="button" id="btnCancelar" class="btn-secondary" style="display: none;">✖ Cancelar Edição</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- PAINEL DE ESTATÍSTICAS -->
+    <div class="stats">
+        <div class="stat-card"><span>📋 Total de contas:</span><span id="totalContas">0</span></div>
+        <div class="stat-card"><span>⚠️ A pagar (pendente):</span><span id="totalAPagar">R$ 0,00</span></div>
+        <div class="stat-card"><span>✅ Total liquidado:</span><span id="totalLiquidado">R$ 0,00</span></div>
+    </div>
+
+    <!-- BARRA DE CONSULTA E AÇÕES -->
+    <div class="filtro-bar">
+        <div class="filtro-busca">
+            <input type="text" id="filtroInput" placeholder="🔍 Filtrar por descrição, entidade ou referência...">
+            <button type="button" id="limparFiltroBtn" class="btn-secondary">Limpar filtro</button>
+        </div>
+        <div class="btn-group">
+            <button type="button" id="exportarCSVBtn" class="btn-secondary">📎 Exportar para CSV (Sheet)</button>
+            <button type="button" id="limparTudoBtn" class="btn-danger">🗑️ Limpar todos os dados</button>
+        </div>
+    </div>
+
+    <!-- TABELA / SHEET DE CONSULTA -->
+    <div class="table-wrapper">
+        <table id="contasTable">
+            <thead>
+                <tr>
+                    <th>Data</th><th>Descrição</th><th>Valor (R$)</th><th>Entidade</th><th>Referência</th><th>Liquidado</th><th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaCorpo">
+                <tr class="empty-row"><td colspan="7">Nenhuma conta cadastrada. Adicione uma conta acima.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <footer>✓ Os dados são salvos automaticamente no navegador • Clique no checkbox da tabela para liquidar • Edite ou exclua usando os botões</footer>
+</div>
+
+<script>
+    // -------- VARIÁVEIS GLOBAIS ----------
+    let contas = [];            // array de objetos
+    let modoEdicao = false;
+    let idEdicao = null;
+
+    // Elementos DOM
+    const form = document.getElementById('contaForm');
+    const dataInput = document.getElementById('data');
+    const descricaoInput = document.getElementById('descricao');
+    const valorInput = document.getElementById('valor');
+    const entidadeInput = document.getElementById('entidade');
+    const referenciaInput = document.getElementById('referencia');
+    const liquidadoCheck = document.getElementById('liquidadoCheck');
+    const btnSalvar = document.getElementById('btnSalvar');
+    const btnCancelar = document.getElementById('btnCancelar');
+    const filtroInput = document.getElementById('filtroInput');
+    const limparFiltroBtn = document.getElementById('limparFiltroBtn');
+    const exportarCSVBtn = document.getElementById('exportarCSVBtn');
+    const limparTudoBtn = document.getElementById('limparTudoBtn');
+    const tabelaCorpo = document.getElementById('tabelaCorpo');
+
+    // elementos estatísticas
+    const totalContasSpan = document.getElementById('totalContas');
+    const totalAPagarSpan = document.getElementById('totalAPagar');
+    const totalLiquidadoSpan = document.getElementById('totalLiquidado');
+
+    // -------- FUNÇÕES AUXILIARES ----------
+    function carregarDados() {
+        const dadosSalvos = localStorage.getItem('contasAPagar');
+        if (dadosSalvos) {
+            try {
+                contas = JSON.parse(dadosSalvos);
+                // garantir que valores numéricos e booleanos estejam corretos
+                contas = contas.map(conta => ({
+                    ...conta,
+                    valor: typeof conta.valor === 'number' ? conta.valor : parseFloat(conta.valor) || 0,
+                    liquidado: !!conta.liquidado
+                }));
+            } catch(e) { contas = []; }
+        }
+        if (!contas.length) {
+            // dados de exemplo para demonstração inicial
+            const hoje = new Date().toISOString().slice(0,10);
+            contas = [
+                { id: Date.now() + 1, data: hoje, descricao: "Energia Elétrica", valor: 187.50, entidade: "CEMIG", referencia: "FAT 0422", liquidado: false },
+                { id: Date.now() + 2, data: "2025-03-10", descricao: "Internet Fibra", valor: 129.90, entidade: "Vivo", referencia: "MAIO/2025", liquidado: true },
+                { id: Date.now() + 3, data: "2025-04-05", descricao: "Material Escritório", valor: 340.00, entidade: "Kalunga", referencia: "NF 8821", liquidado: false }
+            ];
+            salvarDados();
+        }
+    }
+
+    function salvarDados() {
+        localStorage.setItem('contasAPagar', JSON.stringify(contas));
+    }
+
+    // atualizar estatísticas (sempre sobre todos os registros, independente do filtro)
+    function atualizarEstatisticas() {
+        const total = contas.length;
+        let totalPendente = 0;
+        let totalLiquidadoValor = 0;
+        contas.forEach(conta => {
+            if (conta.liquidado) {
+                totalLiquidadoValor += conta.valor;
+            } else {
+                totalPendente += conta.valor;
+            }
+        });
+        totalContasSpan.innerText = total;
+        totalAPagarSpan.innerText = `R$ ${totalPendente.toFixed(2)}`;
+        totalLiquidadoSpan.innerText = `R$ ${totalLiquidadoValor.toFixed(2)}`;
+    }
+
+    // filtrar contas baseado no texto do filtro (descrição, entidade, referência)
+    function aplicarFiltro() {
+        const termo = filtroInput.value.trim().toLowerCase();
+        if (!termo) return [...contas];
+        return contas.filter(conta => 
+            conta.descricao.toLowerCase().includes(termo) ||
+            conta.entidade.toLowerCase().includes(termo) ||
+            conta.referencia.toLowerCase().includes(termo)
+        );
+    }
+
+    // ordenar por data decrescente (mais recente primeiro)
+    function ordenarContas(lista) {
+        return [...lista].sort((a,b) => (a.data < b.data ? 1 : -1));
+    }
+
+    // renderizar a tabela (sheet principal)
+    function renderizarTabela() {
+        const filtradas = aplicarFiltro();
+        const ordenadas = ordenarContas(filtradas);
+        
+        if (ordenadas.length === 0) {
+            tabelaCorpo.innerHTML = '<tr class="empty-row"><td colspan="7">📭 Nenhuma conta encontrada. Cadastre uma nova ou altere o filtro.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        for (const conta of ordenadas) {
+            const dataFormatada = conta.data;
+            const valorFormatado = conta.valor.toFixed(2).replace('.', ',');
+            const statusText = conta.liquidado ? '<span class="status-pago">PAGO</span>' : '<span class="status-pendente">PENDENTE</span>';
+            const checkedAttr = conta.liquidado ? 'checked' : '';
+            
+            html += `
+                <tr data-id="${conta.id}">
+                    <td>${dataFormatada}</td>
+                    <td><strong>${escapeHtml(conta.descricao)}</strong></td>
+                    <td class="valor-moeda">R$ ${valorFormatado}</td>
+                    <td>${escapeHtml(conta.entidade)}</td>
+                    <td>${escapeHtml(conta.referencia)}</td>
+                    <td style="text-align:center">
+                        <input type="checkbox" class="checkbox-liquidar" data-id="${conta.id}" ${checkedAttr}>
+                    </td>
+                    <td>
+                        <button class="acao-botao editar" data-id="${conta.id}" title="Editar">✏️</button>
+                        <button class="acao-botao excluir" data-id="${conta.id}" title="Excluir">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        }
+        tabelaCorpo.innerHTML = html;
+
+        // adicionar eventos dinâmicos nos checkboxes e botões de ação
+        document.querySelectorAll('.checkbox-liquidar').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                e.stopPropagation();
+                const id = parseInt(cb.getAttribute('data-id'));
+                const novoEstado = cb.checked;
+                toggleLiquidado(id, novoEstado);
+            });
+        });
+
+        document.querySelectorAll('.acao-botao.editar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                iniciarEdicao(id);
+            });
+        });
+
+        document.querySelectorAll('.acao-botao.excluir').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                excluirConta(id);
+            });
+        });
+    }
+
+    // função auxiliar para evitar XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // alternar status liquidado (checkbox na tabela)
+    function toggleLiquidado(id, novoEstado) {
+        const index = contas.findIndex(c => c.id === id);
+        if (index !== -1) {
+            contas[index].liquidado = novoEstado;
+            salvarDados();
+            atualizarEstatisticas();
+            renderizarTabela();   // re-renderizar mantendo filtro
+        }
+    }
+
+    // excluir conta
+    function excluirConta(id) {
+        if (confirm('Tem certeza que deseja excluir esta conta permanentemente?')) {
+            contas = contas.filter(c => c.id !== id);
+            salvarDados();
+            if (modoEdicao && idEdicao === id) {
+                resetarFormulario();
+                cancelarEdicao();
+            }
+            atualizarEstatisticas();
+            renderizarTabela();
+        }
+    }
+
+    // iniciar edição: preenche formulário
+    function iniciarEdicao(id) {
+        const conta = contas.find(c => c.id === id);
+        if (!conta) return;
+        
+        modoEdicao = true;
+        idEdicao = id;
+        
+        dataInput.value = conta.data;
+        descricaoInput.value = conta.descricao;
+        valorInput.value = conta.valor;
+        entidadeInput.value = conta.entidade;
+        referenciaInput.value = conta.referencia;
+        liquidadoCheck.checked = conta.liquidado;
+        
+        btnSalvar.innerText = '✏️ Atualizar Conta';
+        btnCancelar.style.display = 'inline-flex';
+    }
+
+    function cancelarEdicao() {
+        modoEdicao = false;
+        idEdicao = null;
+        resetarFormulario();
+        btnSalvar.innerText = '➕ Adicionar Conta';
+        btnCancelar.style.display = 'none';
+    }
+
+    function resetarFormulario() {
+        // data atual como padrão
+        const hoje = new Date().toISOString().slice(0,10);
+        dataInput.value = hoje;
+        descricaoInput.value = '';
+        valorInput.value = '';
+        entidadeInput.value = '';
+        referenciaInput.value = '';
+        liquidadoCheck.checked = false;
+    }
+
+    // adicionar ou atualizar conta
+    function salvarConta(event) {
+        event.preventDefault();
+        
+        // validações
+        const data = dataInput.value.trim();
+        const descricao = descricaoInput.value.trim();
+        let valor = parseFloat(valorInput.value);
+        const entidade = entidadeInput.value.trim();
+        const referencia = referenciaInput.value.trim();
+        const liquidado = liquidadoCheck.checked;
+        
+        if (!data) { alert('Informe a data da conta.'); return; }
+        if (!descricao) { alert('Informe a descrição.'); return; }
+        if (isNaN(valor) || valor <= 0) { alert('Informe um valor válido (maior que zero).'); return; }
+        if (!entidade) { alert('Informe a entidade / credor.'); return; }
+        if (!referencia) { alert('Informe a referência (ex: nota fiscal, fatura).'); return; }
+        
+        valor = parseFloat(valor.toFixed(2));
+        
+        if (modoEdicao && idEdicao !== null) {
+            // modo edição
+            const index = contas.findIndex(c => c.id === idEdicao);
+            if (index !== -1) {
+                contas[index] = {
+                    ...contas[index],
+                    data: data,
+                    descricao: descricao,
+                    valor: valor,
+                    entidade: entidade,
+                    referencia: referencia,
+                    liquidado: liquidado
+                };
+                salvarDados();
+                cancelarEdicao();  // reseta modo e botões
+                atualizarEstatisticas();
+                renderizarTabela();
+            } else {
+                alert('Erro: conta não encontrada para editar.');
+                cancelarEdicao();
+            }
+        } else {
+            // novo registro
+            const novoId = Date.now();
+            const novaConta = {
+                id: novoId,
+                data: data,
+                descricao: descricao,
+                valor: valor,
+                entidade: entidade,
+                referencia: referencia,
+                liquidado: liquidado
+            };
+            contas.push(novaConta);
+            salvarDados();
+            resetarFormulario();
+            atualizarEstatisticas();
+            renderizarTabela();
+        }
+    }
+
+    // limpar todos os dados (reset completo)
+    function limparTudo() {
+        if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODAS as contas cadastradas. Esta ação não pode ser desfeita. Deseja continuar?')) {
+            contas = [];
+            salvarDados();
+            if (modoEdicao) cancelarEdicao();
+            atualizarEstatisticas();
+            renderizarTabela();
+            resetarFormulario();
+        }
+    }
+
+    // exportar para CSV (planilha)
+    function exportarCSV() {
+        if (contas.length === 0) {
+            alert('Não há contas para exportar. Adicione pelo menos uma conta.');
+            return;
+        }
+        // cabeçalho
+        const headers = ['Data', 'Descrição', 'Valor (R$)', 'Entidade', 'Referência', 'Liquidado'];
+        const linhas = contas.map(conta => {
+            const valorStr = conta.valor.toFixed(2).replace('.', ',');
+            const liquidadoStr = conta.liquidado ? 'SIM' : 'NÃO';
+            return [
+                conta.data,
+                `"${conta.descricao.replace(/"/g, '""')}"`,
+                valorStr,
+                `"${conta.entidade.replace(/"/g, '""')}"`,
+                `"${conta.referencia.replace(/"/g, '""')}"`,
+                liquidadoStr
+            ];
+        });
+        
+        const conteudoCSV = [headers, ...linhas].map(row => row.join(';')).join('\n');
+        const blob = new Blob(["\uFEFF" + conteudoCSV], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'contas_a_pagar.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // sincronizar ao filtrar
+    function aoFiltrar() {
+        renderizarTabela();
+    }
+
+    function limparFiltro() {
+        filtroInput.value = '';
+        renderizarTabela();
+    }
+
+    // eventos e inicialização
+    function init() {
+        carregarDados();
+        // setar data atual padrão no formulário
+        const hoje = new Date().toISOString().slice(0,10);
+        dataInput.value = hoje;
+        
+        atualizarEstatisticas();
+        renderizarTabela();
+        
+        form.addEventListener('submit', salvarConta);
+        btnCancelar.addEventListener('click', cancelarEdicao);
+        filtroInput.addEventListener('input', aoFiltrar);
+        limparFiltroBtn.addEventListener('click', limparFiltro);
+        exportarCSVBtn.addEventListener('click', exportarCSV);
+        limparTudoBtn.addEventListener('click', limparTudo);
+    }
+    
+    init();
+</script>
+</body>
+</html>
