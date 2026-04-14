@@ -461,6 +461,20 @@
     function salvarDados() {
         localStorage.setItem('contasAPagar', JSON.stringify(contas));
     }
+    // Enviar para Google Sheets (se configurado)
+const webAppUrl = "https://script.google.com/macros/s/AKfycbwz-_cz7N-zZ9VhvsT757HChV6KssOWViP-a3LVaRA0_e3sf9kH1UZWjSCLXusmeGnuLg/exec";
+fetch(webAppUrl, {
+  method: "POST",
+  mode: "no-cors", // ou cors se o Web App permitir
+  body: JSON.stringify({
+    data: data,
+    descricao: descricao,
+    valor: valor,
+    entidade: entidade,
+    referencia: referencia,
+    liquidado: liquidado
+  })
+}).catch(erro => console.log("Erro ao sincronizar com a planilha:", erro));
 
     // atualizar estatísticas (sempre sobre todos os registros, independente do filtro)
     function atualizarEstatisticas() {
