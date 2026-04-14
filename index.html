@@ -4,264 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Gestão de Contas a Pagar | Euro €</title>
-    <!-- Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-        }
-
-        body {
-            background: #eef2f7;
-            padding: 2rem 1.5rem;
-            color: #1a2c3e;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #1f6e8c, #0e4b64);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 0.25rem;
-        }
-
-        .subtitulo {
-            color: #4a627a;
-            margin-bottom: 1.8rem;
-            border-left: 4px solid #2c8fbb;
-            padding-left: 0.8rem;
-        }
-
-        /* Dashboard cards */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .dashboard-card {
-            background: white;
-            border-radius: 24px;
-            padding: 1.2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2edf2;
-        }
-
-        .dashboard-card h3 {
-            color: #1f6e8c;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        canvas {
-            max-height: 280px;
-            width: 100%;
-        }
-
-        .form-card, .table-wrapper {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2edf2;
-        }
-
-        .form-card {
-            padding: 1.5rem 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            align-items: end;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .form-field label {
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #2c3e50;
-        }
-
-        .form-field input {
-            padding: 0.6rem 0.8rem;
-            border: 1px solid #cfdfed;
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-
-        .form-field input:focus {
-            outline: none;
-            border-color: #2c8fbb;
-        }
-
-        .checkbox-field {
-            flex-direction: row;
-            align-items: center;
-            gap: 0.6rem;
-            margin-top: 0.5rem;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: #1f6e8c;
-            border: none;
-            padding: 0.6rem 1.4rem;
-            border-radius: 40px;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif; }
+        body { background: #eef2f7; padding: 2rem 1.5rem; color: #1a2c3e; }
+        .container { max-width: 1600px; margin: 0 auto; }
+        h1 { font-size: 1.9rem; font-weight: 600; background: linear-gradient(135deg, #1f6e8c, #0e4b64); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 0.25rem; }
+        .subtitulo { color: #4a627a; margin-bottom: 1.8rem; border-left: 4px solid #2c8fbb; padding-left: 0.8rem; }
+        .dashboard-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .dashboard-card { background: white; border-radius: 24px; padding: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2edf2; }
+        .dashboard-card h3 { color: #1f6e8c; margin-bottom: 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+        canvas { max-height: 280px; width: 100%; }
+        .form-card, .table-wrapper { background: white; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2edf2; }
+        .form-card { padding: 1.5rem 2rem; margin-bottom: 2rem; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: end; }
+        .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-field label { font-weight: 600; font-size: 0.8rem; color: #2c3e50; }
+        .form-field input { padding: 0.6rem 0.8rem; border: 1px solid #cfdfed; border-radius: 12px; font-size: 0.9rem; }
+        .form-field input:focus { outline: none; border-color: #2c8fbb; }
+        .checkbox-field { flex-direction: row; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
+        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+        button { background: #1f6e8c; border: none; padding: 0.6rem 1.4rem; border-radius: 40px; font-weight: 600; color: white; cursor: pointer; transition: all 0.2s; }
         button:hover { background: #0e5a75; transform: translateY(-1px); }
         .btn-secondary { background: #5f7f9e; }
         .btn-secondary:hover { background: #3c5a77; }
         .btn-danger { background: #c7443a; }
         .btn-danger:hover { background: #a8342b; }
-
-        .stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            background: white;
-            border-radius: 20px;
-            padding: 0.8rem 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-card {
-            background: #f9fbfd;
-            padding: 0.4rem 1rem;
-            border-radius: 40px;
-            font-weight: 500;
-        }
-
+        .stats { display: flex; flex-wrap: wrap; gap: 1rem; background: white; border-radius: 20px; padding: 0.8rem 1.5rem; margin-bottom: 1.5rem; }
+        .stat-card { background: #f9fbfd; padding: 0.4rem 1rem; border-radius: 40px; font-weight: 500; }
         .stat-card span:first-child { color: #3b6e8b; }
         .stat-card span:last-child { font-weight: 800; margin-left: 0.5rem; }
-
-        .filtro-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-bottom: 1.2rem;
-            justify-content: space-between;
-        }
-
-        .filtro-busca {
-            flex: 2;
-            display: flex;
-            gap: 0.6rem;
-        }
-
-        .filtro-busca input {
-            flex: 1;
-            padding: 0.6rem 1rem;
-            border-radius: 48px;
-            border: 1px solid #cbdde9;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            padding: 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        th {
-            text-align: left;
-            padding: 0.8rem;
-            background: #f4f9fe;
-            color: #1f4e6e;
-        }
-
-        td {
-            padding: 0.7rem 0.8rem;
-            border-bottom: 1px solid #e9f0f5;
-        }
-
-        .checkbox-liquidar {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .acao-botao {
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 20px;
-        }
-
-        .status-pago {
-            background: #e3f7ec;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #1e7b48;
-        }
-
-        .status-pendente {
-            background: #fff0db;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #c95a0f;
-        }
-
-        .sync-status {
-            font-size: 0.7rem;
-            margin-top: 0.5rem;
-            padding: 0.2rem 0.8rem;
-            border-radius: 30px;
-            display: inline-block;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            font-size: 0.7rem;
-            color: #6c8dae;
-        }
-
-        @media (max-width: 800px) {
-            body { padding: 1rem; }
-            .dashboard-container { grid-template-columns: 1fr; }
-        }
+        .filtro-bar { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.2rem; justify-content: space-between; }
+        .filtro-busca { flex: 2; display: flex; gap: 0.6rem; }
+        .filtro-busca input { flex: 1; padding: 0.6rem 1rem; border-radius: 48px; border: 1px solid #cbdde9; }
+        .table-wrapper { overflow-x: auto; padding: 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; padding: 0.8rem; background: #f4f9fe; color: #1f4e6e; }
+        td { padding: 0.7rem 0.8rem; border-bottom: 1px solid #e9f0f5; }
+        .checkbox-liquidar { width: 18px; height: 18px; cursor: pointer; }
+        .acao-botao { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 20px; }
+        .status-pago { background: #e3f7ec; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: #1e7b48; }
+        .status-pendente { background: #fff0db; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: #c95a0f; }
+        .sync-status { font-size: 0.7rem; margin-top: 0.5rem; padding: 0.2rem 0.8rem; border-radius: 30px; display: inline-block; }
+        footer { text-align: center; margin-top: 2rem; font-size: 0.7rem; color: #6c8dae; }
+        @media (max-width: 800px) { body { padding: 1rem; } .dashboard-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -269,19 +55,11 @@
     <h1>📆 Contas a Pagar • Euro (€)</h1>
     <div class="subtitulo">Registo, edição, liquidação e dashboard analítico</div>
 
-    <!-- DASHBOARD -->
     <div class="dashboard-container">
-        <div class="dashboard-card">
-            <h3>📊 Despesas por Mês</h3>
-            <canvas id="chartMensal" width="400" height="250"></canvas>
-        </div>
-        <div class="dashboard-card">
-            <h3>🏢 Despesas por Entidade</h3>
-            <canvas id="chartEntidade" width="400" height="250"></canvas>
-        </div>
+        <div class="dashboard-card"><h3>📊 Despesas por Mês</h3><canvas id="chartMensal" width="400" height="250"></canvas></div>
+        <div class="dashboard-card"><h3>🏢 Despesas por Entidade</h3><canvas id="chartEntidade" width="400" height="250"></canvas></div>
     </div>
 
-    <!-- FORMULÁRIO -->
     <div class="form-card">
         <form id="contaForm">
             <div class="form-row">
@@ -300,14 +78,12 @@
         </form>
     </div>
 
-    <!-- ESTATÍSTICAS RÁPIDAS -->
     <div class="stats">
         <div class="stat-card"><span>📋 Total:</span><span id="totalContas">0</span></div>
         <div class="stat-card"><span>⚠️ A pagar:</span><span id="totalAPagar">0,00 €</span></div>
         <div class="stat-card"><span>✅ Liquidado:</span><span id="totalLiquidado">0,00 €</span></div>
     </div>
 
-    <!-- FILTRO E TABELA -->
     <div class="filtro-bar">
         <div class="filtro-busca"><input type="text" id="filtroInput" placeholder="🔍 Filtrar..."><button type="button" id="limparFiltroBtn" class="btn-secondary">Limpar</button></div>
         <div class="btn-group">
@@ -326,17 +102,11 @@
 </div>
 
 <script>
-    // ================= CONFIG =================
-    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwz-_cz7N-zZ9VhvsT757HChV6KssOWViP-a3LVaRA0_e3sf9kH1UZWjSCLXusmeGnuLg/exec';
-    
     let contas = [];
     let modoEdicao = false;
     let idEdicao = null;
-
-    // Gráficos
     let chartMensal, chartEntidade;
 
-    // DOM
     const form = document.getElementById('contaForm');
     const dataInput = document.getElementById('data');
     const descricaoInput = document.getElementById('descricao');
@@ -364,41 +134,33 @@
         setTimeout(() => { syncMessageDiv.style.display = 'none'; }, 4000);
     }
 
-    // Enviar para Google Sheets (com ID para edição)
-    async function enviarParaGoogleSheets(conta, isEdit = false, oldId = null) {
+    // Função para enviar/atualizar no Google Sheets (via google.script.run)
+    function enviarParaGoogleSheets(conta, isEdit = false, oldId = null) {
         mostrarMensagemSync(`⏳ ${isEdit ? 'A atualizar' : 'A enviar'} "${conta.descricao}"...`, true);
-        try {
-            const payload = {
-                id: isEdit ? (oldId || conta.id) : null,  // enviar ID se for edição
+        
+        google.script.run
+            .withSuccessHandler(function(resultado) {
+                if (resultado.status === 'success') {
+                    mostrarMensagemSync(`✓ ${isEdit ? 'Atualizada' : 'Adicionada'}: "${conta.descricao}"`, true);
+                } else {
+                    mostrarMensagemSync(`⚠️ Erro: ${resultado.message}`, false);
+                }
+            })
+            .withFailureHandler(function(erro) {
+                console.error(erro);
+                mostrarMensagemSync(`⚠️ Erro ao comunicar com o servidor: ${erro.message}`, false);
+            })
+            .processarConta({
+                id: isEdit ? (oldId || conta.id) : null,
                 data: conta.data,
                 descricao: conta.descricao,
                 valor: conta.valor,
                 entidade: conta.entidade,
                 referencia: conta.referencia,
                 liquidado: conta.liquidado ? "SIM" : "NÃO"
-            };
-            
-            const resposta = await fetch(WEBAPP_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
             });
-            
-            if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
-            const resultado = await resposta.json();
-            if (resultado.status === 'success') {
-                mostrarMensagemSync(`✓ ${isEdit ? 'Atualizada' : 'Adicionada'}: "${conta.descricao}"`, true);
-            } else {
-                throw new Error(resultado.message);
-            }
-        } catch (erro) {
-            console.error(erro);
-            mostrarMensagemSync(`⚠️ Erro: ${erro.message}`, false);
-        }
     }
 
-    // ================= DADOS LOCAIS =================
     function carregarDados() {
         const saved = localStorage.getItem('contasAPagar_Euro');
         if (saved) {
@@ -437,22 +199,16 @@
         totalLiquidadoSpan.innerText = `${liquidado.toFixed(2)} €`;
     }
 
-    // ================= DASHBOARD =================
     function atualizarDashboard() {
-        // Dados por mês (YYYY-MM)
         const meses = {};
-        // Dados por entidade
         const entidades = {};
-
         contas.forEach(conta => {
-            const mes = conta.data.substring(0, 7); // "2025-04"
+            const mes = conta.data.substring(0, 7);
             meses[mes] = (meses[mes] || 0) + conta.valor;
             entidades[conta.entidade] = (entidades[conta.entidade] || 0) + conta.valor;
         });
-
         const mesesOrdenados = Object.keys(meses).sort();
         const valoresMensais = mesesOrdenados.map(m => meses[m]);
-
         const entidadesOrdenadas = Object.keys(entidades).sort();
         const valoresEntidades = entidadesOrdenadas.map(e => entidades[e]);
 
@@ -474,7 +230,6 @@
         });
     }
 
-    // ================= TABELA =================
     function aplicarFiltro() {
         const termo = filtroInput.value.trim().toLowerCase();
         if (!termo) return [...contas];
@@ -504,7 +259,7 @@
                 <td>${escapeHtml(conta.referencia)}</td>
                 <td style="text-align:center"><input type="checkbox" class="checkbox-liquidar" data-id="${conta.id}" ${conta.liquidado ? 'checked' : ''}></td>
                 <td><button class="acao-botao editar" data-id="${conta.id}">✏️</button> <button class="acao-botao excluir" data-id="${conta.id}">🗑️</button></td>
-            </tr>`;
+             </tr>`;
         });
         tabelaCorpo.innerHTML = html;
 
@@ -513,23 +268,20 @@
         document.querySelectorAll('.acao-botao.excluir').forEach(btn => btn.addEventListener('click', (e) => excluirConta(parseInt(btn.dataset.id))));
     }
 
-    async function toggleLiquidado(id, estado) {
+    function toggleLiquidado(id, estado) {
         const index = contas.findIndex(c => c.id === id);
         if (index !== -1) {
-            const old = { ...contas[index] };
             contas[index].liquidado = estado;
             salvarDados();
-            await enviarParaGoogleSheets(contas[index], true, id);
+            enviarParaGoogleSheets(contas[index], true, id);
         }
     }
 
-    async function excluirConta(id) {
+    function excluirConta(id) {
         if (!confirm('Tem certeza que deseja excluir esta conta?')) return;
         const conta = contas.find(c => c.id === id);
         contas = contas.filter(c => c.id !== id);
         salvarDados();
-        // Notificar exclusão (opcional: chamar API para remover da sheet)
-        if (conta) await enviarParaGoogleSheets({ ...conta, _delete: true }, true, id);
         if (modoEdicao && idEdicao === id) cancelarEdicao();
     }
 
@@ -562,7 +314,7 @@
         btnCancelar.style.display = 'none';
     }
 
-    async function salvarConta(event) {
+    function salvarConta(event) {
         event.preventDefault();
         const data = dataInput.value.trim();
         const descricao = descricaoInput.value.trim();
@@ -580,19 +332,17 @@
         if (modoEdicao && idEdicao !== null) {
             const index = contas.findIndex(c => c.id === idEdicao);
             if (index !== -1) {
-                const antiga = contas[index];
-                contas[index] = { ...antiga, data, descricao, valor, entidade, referencia, liquidado };
+                contas[index] = { ...contas[index], data, descricao, valor, entidade, referencia, liquidado };
                 salvarDados();
-                await enviarParaGoogleSheets(contas[index], true, idEdicao);
+                enviarParaGoogleSheets(contas[index], true, idEdicao);
                 cancelarEdicao();
             }
         } else {
             const novaConta = { id: Date.now(), data, descricao, valor, entidade, referencia, liquidado };
             contas.push(novaConta);
             salvarDados();
-            await enviarParaGoogleSheets(novaConta, false);
-            const hoje = new Date().toISOString().slice(0,10);
-            dataInput.value = hoje;
+            enviarParaGoogleSheets(novaConta, false);
+            dataInput.value = new Date().toISOString().slice(0,10);
             descricaoInput.value = '';
             valorInput.value = '';
             entidadeInput.value = '';
@@ -627,8 +377,7 @@
 
     function init() {
         carregarDados();
-        const hoje = new Date().toISOString().slice(0,10);
-        dataInput.value = hoje;
+        dataInput.value = new Date().toISOString().slice(0,10);
         atualizarEstatisticas();
         renderizarTabela();
         atualizarDashboard();
