@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Gestão de Contas a Pagar | Euro €</title>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,7 +21,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -31,7 +33,6 @@
             -webkit-background-clip: text;
             color: transparent;
             margin-bottom: 0.25rem;
-            letter-spacing: -0.3px;
         }
 
         .subtitulo {
@@ -39,21 +40,54 @@
             margin-bottom: 1.8rem;
             border-left: 4px solid #2c8fbb;
             padding-left: 0.8rem;
-            font-weight: 450;
+        }
+
+        /* Dashboard cards */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2edf2;
+        }
+
+        .dashboard-card h3 {
+            color: #1f6e8c;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        canvas {
+            max-height: 280px;
+            width: 100%;
+        }
+
+        .form-card, .table-wrapper {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2edf2;
         }
 
         .form-card {
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
             padding: 1.5rem 2rem;
             margin-bottom: 2rem;
         }
 
         .form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.2rem 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
             align-items: end;
         }
 
@@ -65,24 +99,20 @@
 
         .form-field label {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #2c3e50;
-            letter-spacing: 0.3px;
         }
 
         .form-field input {
-            padding: 0.7rem 0.9rem;
+            padding: 0.6rem 0.8rem;
             border: 1px solid #cfdfed;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            background: #ffffff;
-            transition: 0.2s;
+            border-radius: 12px;
+            font-size: 0.9rem;
         }
 
         .form-field input:focus {
             outline: none;
             border-color: #2c8fbb;
-            box-shadow: 0 0 0 3px rgba(44, 143, 187, 0.2);
         }
 
         .checkbox-field {
@@ -92,260 +122,175 @@
             margin-top: 0.5rem;
         }
 
-        .checkbox-field label {
-            cursor: pointer;
-        }
-
         .form-actions {
             display: flex;
             gap: 1rem;
-            margin-top: 1.8rem;
+            margin-top: 1.5rem;
             flex-wrap: wrap;
         }
 
         button {
             background: #1f6e8c;
             border: none;
-            padding: 0.7rem 1.6rem;
+            padding: 0.6rem 1.4rem;
             border-radius: 40px;
             font-weight: 600;
             color: white;
-            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
-        button:hover {
-            background: #0e5a75;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: #5f7f9e;
-        }
-
-        .btn-secondary:hover {
-            background: #3c5a77;
-        }
-
-        .btn-danger {
-            background: #c7443a;
-        }
-
-        .btn-danger:hover {
-            background: #a8342b;
-        }
+        button:hover { background: #0e5a75; transform: translateY(-1px); }
+        .btn-secondary { background: #5f7f9e; }
+        .btn-secondary:hover { background: #3c5a77; }
+        .btn-danger { background: #c7443a; }
+        .btn-danger:hover { background: #a8342b; }
 
         .stats {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 1rem;
             background: white;
-            border-radius: 32px;
-            padding: 1rem 2rem;
-            margin-bottom: 1.8rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2edf2;
+            border-radius: 20px;
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
             background: #f9fbfd;
-            padding: 0.5rem 1.2rem;
+            padding: 0.4rem 1rem;
             border-radius: 40px;
             font-weight: 500;
         }
 
-        .stat-card span:first-child {
-            color: #3b6e8b;
-        }
-
-        .stat-card span:last-child {
-            font-weight: 800;
-            color: #1a2c3e;
-            margin-left: 0.6rem;
-            font-size: 1.2rem;
-        }
+        .stat-card span:first-child { color: #3b6e8b; }
+        .stat-card span:last-child { font-weight: 800; margin-left: 0.5rem; }
 
         .filtro-bar {
             display: flex;
             flex-wrap: wrap;
             gap: 0.8rem;
-            margin-bottom: 1.5rem;
-            align-items: center;
+            margin-bottom: 1.2rem;
             justify-content: space-between;
         }
 
         .filtro-busca {
             flex: 2;
-            min-width: 200px;
             display: flex;
             gap: 0.6rem;
         }
 
         .filtro-busca input {
             flex: 1;
-            padding: 0.7rem 1rem;
+            padding: 0.6rem 1rem;
             border-radius: 48px;
             border: 1px solid #cbdde9;
-            background: white;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 0.6rem;
-            flex-wrap: wrap;
         }
 
         .table-wrapper {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             overflow-x: auto;
-            border: 1px solid #e2edf2;
+            padding: 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
-            min-width: 700px;
+            font-size: 0.85rem;
         }
 
         th {
             text-align: left;
-            padding: 1rem 0.8rem;
-            background-color: #f4f9fe;
+            padding: 0.8rem;
+            background: #f4f9fe;
             color: #1f4e6e;
-            font-weight: 700;
-            border-bottom: 2px solid #dce9f0;
         }
 
         td {
-            padding: 0.9rem 0.8rem;
+            padding: 0.7rem 0.8rem;
             border-bottom: 1px solid #e9f0f5;
-            vertical-align: middle;
-        }
-
-        tr:hover td {
-            background-color: #fafeff;
         }
 
         .checkbox-liquidar {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
-            accent-color: #1f6e8c;
         }
 
         .acao-botao {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             padding: 4px 8px;
-            border-radius: 30px;
-            margin: 0 2px;
-            box-shadow: none;
-            color: #3c6e8f;
-        }
-
-        .acao-botao.editar {
-            background: #eef2fa;
-            color: #2c6e9e;
-        }
-
-        .acao-botao.excluir {
-            background: #fee9e7;
-            color: #c24134;
+            border-radius: 20px;
         }
 
         .status-pago {
-            background-color: #e3f7ec;
-            border-radius: 20px;
+            background: #e3f7ec;
             padding: 0.2rem 0.5rem;
-            font-size: 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
             color: #1e7b48;
-            display: inline-block;
         }
 
         .status-pendente {
-            background-color: #fff0db;
-            border-radius: 20px;
+            background: #fff0db;
             padding: 0.2rem 0.5rem;
-            font-size: 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
             color: #c95a0f;
         }
 
-        .valor-moeda {
-            font-weight: 600;
-        }
-
-        .empty-row td {
-            text-align: center;
-            padding: 2rem;
-            color: #6f8eaa;
-            font-style: italic;
-        }
-
         .sync-status {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             margin-top: 0.5rem;
-            color: #4a7c59;
-            background: #e9f5eb;
-            display: inline-block;
             padding: 0.2rem 0.8rem;
             border-radius: 30px;
+            display: inline-block;
         }
 
         footer {
             text-align: center;
             margin-top: 2rem;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #6c8dae;
         }
 
-        @media (max-width: 680px) {
+        @media (max-width: 800px) {
             body { padding: 1rem; }
-            .form-card { padding: 1rem; }
-            .stats { flex-direction: column; gap: 0.5rem; }
+            .dashboard-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>📆 Contas a Pagar • Euro (€)</h1>
-    <div class="subtitulo">Registo, liquidação e sincronização com Google Sheets + Calendário</div>
+    <div class="subtitulo">Registo, edição, liquidação e dashboard analítico</div>
 
+    <!-- DASHBOARD -->
+    <div class="dashboard-container">
+        <div class="dashboard-card">
+            <h3>📊 Despesas por Mês</h3>
+            <canvas id="chartMensal" width="400" height="250"></canvas>
+        </div>
+        <div class="dashboard-card">
+            <h3>🏢 Despesas por Entidade</h3>
+            <canvas id="chartEntidade" width="400" height="250"></canvas>
+        </div>
+    </div>
+
+    <!-- FORMULÁRIO -->
     <div class="form-card">
         <form id="contaForm">
             <div class="form-row">
-                <div class="form-field">
-                    <label>📅 Data</label>
-                    <input type="date" id="data" required>
-                </div>
-                <div class="form-field">
-                    <label>📝 Descrição</label>
-                    <input type="text" id="descricao" placeholder="Ex: EDP Eletricidade" required>
-                </div>
-                <div class="form-field">
-                    <label>💰 Valor (€)</label>
-                    <input type="number" id="valor" step="0.01" placeholder="0,00" required>
-                </div>
-                <div class="form-field">
-                    <label>🏢 Entidade</label>
-                    <input type="text" id="entidade" placeholder="Fornecedor / Empresa" required>
-                </div>
-                <div class="form-field">
-                    <label>🔖 Referência</label>
-                    <input type="text" id="referencia" placeholder="Fatura / Contrato" required>
-                </div>
-                <div class="form-field checkbox-field">
-                    <input type="checkbox" id="liquidadoCheck">
-                    <label>✅ Liquidado (pago)</label>
-                </div>
+                <div class="form-field"><label>📅 Data</label><input type="date" id="data" required></div>
+                <div class="form-field"><label>📝 Descrição</label><input type="text" id="descricao" placeholder="Ex: EDP Eletricidade" required></div>
+                <div class="form-field"><label>💰 Valor (€)</label><input type="number" id="valor" step="0.01" placeholder="0,00" required></div>
+                <div class="form-field"><label>🏢 Entidade</label><input type="text" id="entidade" placeholder="Fornecedor" required></div>
+                <div class="form-field"><label>🔖 Referência</label><input type="text" id="referencia" placeholder="Fatura" required></div>
+                <div class="form-field checkbox-field"><input type="checkbox" id="liquidadoCheck"><label>✅ Liquidado</label></div>
             </div>
             <div class="form-actions">
                 <button type="submit" id="btnSalvar">➕ Adicionar Conta</button>
@@ -355,47 +300,43 @@
         </form>
     </div>
 
+    <!-- ESTATÍSTICAS RÁPIDAS -->
     <div class="stats">
-        <div class="stat-card"><span>📋 Total de contas:</span><span id="totalContas">0</span></div>
-        <div class="stat-card"><span>⚠️ A pagar (pendente):</span><span id="totalAPagar">0,00 €</span></div>
-        <div class="stat-card"><span>✅ Total liquidado:</span><span id="totalLiquidado">0,00 €</span></div>
+        <div class="stat-card"><span>📋 Total:</span><span id="totalContas">0</span></div>
+        <div class="stat-card"><span>⚠️ A pagar:</span><span id="totalAPagar">0,00 €</span></div>
+        <div class="stat-card"><span>✅ Liquidado:</span><span id="totalLiquidado">0,00 €</span></div>
     </div>
 
+    <!-- FILTRO E TABELA -->
     <div class="filtro-bar">
-        <div class="filtro-busca">
-            <input type="text" id="filtroInput" placeholder="🔍 Filtrar por descrição, entidade ou referência...">
-            <button type="button" id="limparFiltroBtn" class="btn-secondary">Limpar filtro</button>
-        </div>
+        <div class="filtro-busca"><input type="text" id="filtroInput" placeholder="🔍 Filtrar..."><button type="button" id="limparFiltroBtn" class="btn-secondary">Limpar</button></div>
         <div class="btn-group">
-            <button type="button" id="exportarCSVBtn" class="btn-secondary">📎 Exportar para CSV</button>
-            <button type="button" id="limparTudoBtn" class="btn-danger">🗑️ Limpar todos os dados</button>
+            <button type="button" id="exportarCSVBtn" class="btn-secondary">📎 Exportar CSV</button>
+            <button type="button" id="limparTudoBtn" class="btn-danger">🗑️ Limpar tudo</button>
         </div>
     </div>
 
     <div class="table-wrapper">
         <table id="contasTable">
-            <thead>
-                <tr><th>Data</th><th>Descrição</th><th>Valor (€)</th><th>Entidade</th><th>Referência</th><th>Liquidado</th><th>Ações</th></tr>
-            </thead>
-            <tbody id="tabelaCorpo">
-                <tr class="empty-row"><td colspan="7">Nenhuma conta registada. Adicione uma conta acima.</td></tr>
-            </tbody>
+            <thead><tr><th>Data</th><th>Descrição</th><th>Valor (€)</th><th>Entidade</th><th>Referência</th><th>Liquidado</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaCorpo"><tr class="empty-row"><td colspan="7">Nenhuma conta registada.</td></tr></tbody>
         </table>
     </div>
-    <footer>✓ Os dados ficam guardados localmente e são enviados automaticamente para a sua Google Sheet (e depois para o Calendário).</footer>
+    <footer>✓ Edições atualizam a linha na planilha (não duplicam) • Dashboard dinâmico</footer>
 </div>
 
 <script>
-    // ================= CONFIGURAÇÃO =================
-    // URL DO SEU WEB APP (Google Apps Script) - JÁ INSERIDO
-    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwPMyUyCqvDlK51rxycM4Vwn_0NlGFq4AvkVkFSUcpvXB7C1XYfEInp9Mcc5qk-KwAeRg/exec';
+    // ================= CONFIG =================
+    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwz-_cz7N-zZ9VhvsT757HChV6KssOWViP-a3LVaRA0_e3sf9kH1UZWjSCLXusmeGnuLg/exec';
     
-    // ================= VARIÁVEIS GLOBAIS =================
     let contas = [];
     let modoEdicao = false;
     let idEdicao = null;
 
-    // DOM elements
+    // Gráficos
+    let chartMensal, chartEntidade;
+
+    // DOM
     const form = document.getElementById('contaForm');
     const dataInput = document.getElementById('data');
     const descricaoInput = document.getElementById('descricao');
@@ -420,15 +361,15 @@
         syncMessageDiv.textContent = texto;
         syncMessageDiv.style.backgroundColor = sucesso ? '#e9f5eb' : '#ffe6e5';
         syncMessageDiv.style.color = sucesso ? '#2c6e2c' : '#b33';
-        setTimeout(() => {
-            syncMessageDiv.style.display = 'none';
-        }, 4000);
+        setTimeout(() => { syncMessageDiv.style.display = 'none'; }, 4000);
     }
 
-    // Enviar para Google Sheets (Web App)
-    async function enviarParaGoogleSheets(conta) {
+    // Enviar para Google Sheets (com ID para edição)
+    async function enviarParaGoogleSheets(conta, isEdit = false, oldId = null) {
+        mostrarMensagemSync(`⏳ ${isEdit ? 'A atualizar' : 'A enviar'} "${conta.descricao}"...`, true);
         try {
             const payload = {
+                id: isEdit ? (oldId || conta.id) : null,  // enviar ID se for edição
                 data: conta.data,
                 descricao: conta.descricao,
                 valor: conta.valor,
@@ -437,168 +378,159 @@
                 liquidado: conta.liquidado ? "SIM" : "NÃO"
             };
             
-            // Usamos fetch com mode no-cors para evitar bloqueios CORS (o Web App deve estar configurado para 'Qualquer pessoa')
             const resposta = await fetch(WEBAPP_URL, {
                 method: 'POST',
-                mode: 'no-cors',  // devido à política CORS do Google, mas a mensagem chega à sheet
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             
-            // Como mode 'no-cors' não dá acesso à resposta, assumimos sucesso se não houver erro de rede
-            mostrarMensagemSync(`✓ Conta "${conta.descricao}" enviada para a planilha. O calendário será atualizado em breve.`, true);
+            if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
+            const resultado = await resposta.json();
+            if (resultado.status === 'success') {
+                mostrarMensagemSync(`✓ ${isEdit ? 'Atualizada' : 'Adicionada'}: "${conta.descricao}"`, true);
+            } else {
+                throw new Error(resultado.message);
+            }
         } catch (erro) {
-            console.error("Erro ao enviar para Google Sheets:", erro);
-            mostrarMensagemSync(`⚠️ Erro ao sincronizar: ${erro.message}. Os dados ficaram apenas localmente.`, false);
+            console.error(erro);
+            mostrarMensagemSync(`⚠️ Erro: ${erro.message}`, false);
         }
     }
 
-    // ================= LOCAL STORAGE =================
+    // ================= DADOS LOCAIS =================
     function carregarDados() {
-        const dadosSalvos = localStorage.getItem('contasAPagar_Euro');
-        if (dadosSalvos) {
+        const saved = localStorage.getItem('contasAPagar_Euro');
+        if (saved) {
             try {
-                contas = JSON.parse(dadosSalvos);
-                contas = contas.map(conta => ({
-                    ...conta,
-                    valor: typeof conta.valor === 'number' ? conta.valor : parseFloat(conta.valor) || 0,
-                    liquidado: !!conta.liquidado
-                }));
+                contas = JSON.parse(saved);
+                contas = contas.map(c => ({ ...c, valor: parseFloat(c.valor) || 0, liquidado: !!c.liquidado }));
             } catch(e) { contas = []; }
         }
         if (contas.length === 0) {
             const hoje = new Date().toISOString().slice(0,10);
             contas = [
-                { id: Date.now() + 1, data: hoje, descricao: "Eletricidade EDP", valor: 87.50, entidade: "EDP Comercial", referencia: "FAT ABR25", liquidado: false },
-                { id: Date.now() + 2, data: "2025-04-10", descricao: "Internet MEO", valor: 42.99, entidade: "MEO", referencia: "MAIO/2025", liquidado: true },
-                { id: Date.now() + 3, data: "2025-05-05", descricao: "Água SMAS", valor: 35.20, entidade: "SMAS", referencia: "FAT 8821", liquidado: false }
+                { id: Date.now()+1, data: hoje, descricao: "Eletricidade EDP", valor: 87.50, entidade: "EDP", referencia: "FAT ABR25", liquidado: false },
+                { id: Date.now()+2, data: "2025-04-10", descricao: "Internet MEO", valor: 42.99, entidade: "MEO", referencia: "MAIO/2025", liquidado: true },
+                { id: Date.now()+3, data: "2025-05-05", descricao: "Água SMAS", valor: 35.20, entidade: "SMAS", referencia: "FAT 8821", liquidado: false }
             ];
             salvarDados();
-            // enviar dados iniciais para a sheet (opcional)
-            contas.forEach(c => enviarParaGoogleSheets(c));
         }
     }
 
     function salvarDados() {
         localStorage.setItem('contasAPagar_Euro', JSON.stringify(contas));
+        atualizarEstatisticas();
+        renderizarTabela();
+        atualizarDashboard();
     }
 
     function atualizarEstatisticas() {
         const total = contas.length;
-        let totalPendente = 0;
-        let totalLiquidadoValor = 0;
-        contas.forEach(conta => {
-            if (conta.liquidado) totalLiquidadoValor += conta.valor;
-            else totalPendente += conta.valor;
+        let pendente = 0, liquidado = 0;
+        contas.forEach(c => {
+            if (c.liquidado) liquidado += c.valor;
+            else pendente += c.valor;
         });
         totalContasSpan.innerText = total;
-        totalAPagarSpan.innerText = `${totalPendente.toFixed(2)} €`;
-        totalLiquidadoSpan.innerText = `${totalLiquidadoValor.toFixed(2)} €`;
+        totalAPagarSpan.innerText = `${pendente.toFixed(2)} €`;
+        totalLiquidadoSpan.innerText = `${liquidado.toFixed(2)} €`;
     }
 
+    // ================= DASHBOARD =================
+    function atualizarDashboard() {
+        // Dados por mês (YYYY-MM)
+        const meses = {};
+        // Dados por entidade
+        const entidades = {};
+
+        contas.forEach(conta => {
+            const mes = conta.data.substring(0, 7); // "2025-04"
+            meses[mes] = (meses[mes] || 0) + conta.valor;
+            entidades[conta.entidade] = (entidades[conta.entidade] || 0) + conta.valor;
+        });
+
+        const mesesOrdenados = Object.keys(meses).sort();
+        const valoresMensais = mesesOrdenados.map(m => meses[m]);
+
+        const entidadesOrdenadas = Object.keys(entidades).sort();
+        const valoresEntidades = entidadesOrdenadas.map(e => entidades[e]);
+
+        if (chartMensal) chartMensal.destroy();
+        if (chartEntidade) chartEntidade.destroy();
+
+        const ctxMensal = document.getElementById('chartMensal').getContext('2d');
+        chartMensal = new Chart(ctxMensal, {
+            type: 'bar',
+            data: { labels: mesesOrdenados, datasets: [{ label: 'Despesas (€)', data: valoresMensais, backgroundColor: '#1f6e8c', borderRadius: 8 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
+        });
+
+        const ctxEnt = document.getElementById('chartEntidade').getContext('2d');
+        chartEntidade = new Chart(ctxEnt, {
+            type: 'pie',
+            data: { labels: entidadesOrdenadas, datasets: [{ data: valoresEntidades, backgroundColor: ['#1f6e8c', '#2c8fbb', '#4aa3c2', '#6bb8d4', '#8fcddf'] }] },
+            options: { responsive: true, plugins: { legend: { position: 'right' } } }
+        });
+    }
+
+    // ================= TABELA =================
     function aplicarFiltro() {
         const termo = filtroInput.value.trim().toLowerCase();
         if (!termo) return [...contas];
-        return contas.filter(conta => 
-            conta.descricao.toLowerCase().includes(termo) ||
-            conta.entidade.toLowerCase().includes(termo) ||
-            conta.referencia.toLowerCase().includes(termo)
-        );
+        return contas.filter(c => c.descricao.toLowerCase().includes(termo) || c.entidade.toLowerCase().includes(termo) || c.referencia.toLowerCase().includes(termo));
     }
 
     function ordenarContas(lista) {
         return [...lista].sort((a,b) => (a.data < b.data ? 1 : -1));
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
     function renderizarTabela() {
         const filtradas = aplicarFiltro();
         const ordenadas = ordenarContas(filtradas);
+        if (ordenadas.length === 0) { tabelaCorpo.innerHTML = '<tr class="empty-row"><td colspan="7">📭 Nenhuma conta encontrada.</td></tr>'; return; }
         
-        if (ordenadas.length === 0) {
-            tabelaCorpo.innerHTML = '<tr class="empty-row"><td colspan="7">📭 Nenhuma conta encontrada. Cadastre uma nova ou altere o filtro.</td></tr>';
-            return;
-        }
-
         let html = '';
-        for (const conta of ordenadas) {
-            const valorFormatado = conta.valor.toFixed(2).replace('.', ',');
-            const statusText = conta.liquidado ? '<span class="status-pago">PAGO</span>' : '<span class="status-pendente">PENDENTE</span>';
-            const checkedAttr = conta.liquidado ? 'checked' : '';
-            
-            html += `
-                <tr data-id="${conta.id}">
-                    <td>${conta.data}</td>
-                    <td><strong>${escapeHtml(conta.descricao)}</strong></td>
-                    <td class="valor-moeda">${valorFormatado} €</td>
-                    <td>${escapeHtml(conta.entidade)}</td>
-                    <td>${escapeHtml(conta.referencia)}</td>
-                    <td style="text-align:center">
-                        <input type="checkbox" class="checkbox-liquidar" data-id="${conta.id}" ${checkedAttr}>
-                    </td>
-                    <td>
-                        <button class="acao-botao editar" data-id="${conta.id}" title="Editar">✏️</button>
-                        <button class="acao-botao excluir" data-id="${conta.id}" title="Excluir">🗑️</button>
-                    </td>
-                </tr>
-            `;
-        }
+        ordenadas.forEach(conta => {
+            const valorFmt = conta.valor.toFixed(2).replace('.', ',');
+            const status = conta.liquidado ? '<span class="status-pago">PAGO</span>' : '<span class="status-pendente">PENDENTE</span>';
+            html += `<tr data-id="${conta.id}">
+                <td>${conta.data}</td>
+                <td><strong>${escapeHtml(conta.descricao)}</strong></td>
+                <td>${valorFmt} €</td>
+                <td>${escapeHtml(conta.entidade)}</td>
+                <td>${escapeHtml(conta.referencia)}</td>
+                <td style="text-align:center"><input type="checkbox" class="checkbox-liquidar" data-id="${conta.id}" ${conta.liquidado ? 'checked' : ''}></td>
+                <td><button class="acao-botao editar" data-id="${conta.id}">✏️</button> <button class="acao-botao excluir" data-id="${conta.id}">🗑️</button></td>
+            </tr>`;
+        });
         tabelaCorpo.innerHTML = html;
 
-        document.querySelectorAll('.checkbox-liquidar').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                const id = parseInt(cb.getAttribute('data-id'));
-                toggleLiquidado(id, cb.checked);
-            });
-        });
-
-        document.querySelectorAll('.acao-botao.editar').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(btn.getAttribute('data-id'));
-                iniciarEdicao(id);
-            });
-        });
-
-        document.querySelectorAll('.acao-botao.excluir').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(btn.getAttribute('data-id'));
-                excluirConta(id);
-            });
-        });
+        document.querySelectorAll('.checkbox-liquidar').forEach(cb => cb.addEventListener('change', (e) => { const id = parseInt(cb.dataset.id); toggleLiquidado(id, cb.checked); }));
+        document.querySelectorAll('.acao-botao.editar').forEach(btn => btn.addEventListener('click', (e) => iniciarEdicao(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.acao-botao.excluir').forEach(btn => btn.addEventListener('click', (e) => excluirConta(parseInt(btn.dataset.id))));
     }
 
-    function toggleLiquidado(id, novoEstado) {
+    async function toggleLiquidado(id, estado) {
         const index = contas.findIndex(c => c.id === id);
         if (index !== -1) {
-            contas[index].liquidado = novoEstado;
+            const old = { ...contas[index] };
+            contas[index].liquidado = estado;
             salvarDados();
-            atualizarEstatisticas();
-            renderizarTabela();
-            // Opcional: enviar atualização para a sheet (pode ser feito, mas evita spam)
-            enviarParaGoogleSheets(contas[index]);
+            await enviarParaGoogleSheets(contas[index], true, id);
         }
     }
 
-    function excluirConta(id) {
-        if (confirm('Tem certeza que deseja excluir esta conta permanentemente?')) {
-            contas = contas.filter(c => c.id !== id);
-            salvarDados();
-            if (modoEdicao && idEdicao === id) cancelarEdicao();
-            atualizarEstatisticas();
-            renderizarTabela();
-        }
+    async function excluirConta(id) {
+        if (!confirm('Tem certeza que deseja excluir esta conta?')) return;
+        const conta = contas.find(c => c.id === id);
+        contas = contas.filter(c => c.id !== id);
+        salvarDados();
+        // Notificar exclusão (opcional: chamar API para remover da sheet)
+        if (conta) await enviarParaGoogleSheets({ ...conta, _delete: true }, true, id);
+        if (modoEdicao && idEdicao === id) cancelarEdicao();
     }
 
     function iniciarEdicao(id) {
@@ -632,7 +564,6 @@
 
     async function salvarConta(event) {
         event.preventDefault();
-        
         const data = dataInput.value.trim();
         const descricao = descricaoInput.value.trim();
         let valor = parseFloat(valorInput.value);
@@ -640,32 +571,26 @@
         const referencia = referenciaInput.value.trim();
         const liquidado = liquidadoCheck.checked;
         
-        if (!data) { alert('Informe a data da conta.'); return; }
-        if (!descricao) { alert('Informe a descrição.'); return; }
-        if (isNaN(valor) || valor <= 0) { alert('Informe um valor válido em Euros (maior que zero).'); return; }
-        if (!entidade) { alert('Informe a entidade / credor.'); return; }
-        if (!referencia) { alert('Informe a referência.'); return; }
-        
+        if (!data || !descricao || isNaN(valor) || valor <= 0 || !entidade || !referencia) {
+            alert('Preencha todos os campos corretamente.');
+            return;
+        }
         valor = parseFloat(valor.toFixed(2));
         
         if (modoEdicao && idEdicao !== null) {
             const index = contas.findIndex(c => c.id === idEdicao);
             if (index !== -1) {
-                contas[index] = { ...contas[index], data, descricao, valor, entidade, referencia, liquidado };
+                const antiga = contas[index];
+                contas[index] = { ...antiga, data, descricao, valor, entidade, referencia, liquidado };
                 salvarDados();
-                await enviarParaGoogleSheets(contas[index]);
+                await enviarParaGoogleSheets(contas[index], true, idEdicao);
                 cancelarEdicao();
-                atualizarEstatisticas();
-                renderizarTabela();
             }
         } else {
-            const novaConta = {
-                id: Date.now(),
-                data, descricao, valor, entidade, referencia, liquidado
-            };
+            const novaConta = { id: Date.now(), data, descricao, valor, entidade, referencia, liquidado };
             contas.push(novaConta);
             salvarDados();
-            await enviarParaGoogleSheets(novaConta);
+            await enviarParaGoogleSheets(novaConta, false);
             const hoje = new Date().toISOString().slice(0,10);
             dataInput.value = hoje;
             descricaoInput.value = '';
@@ -673,41 +598,27 @@
             entidadeInput.value = '';
             referenciaInput.value = '';
             liquidadoCheck.checked = false;
-            atualizarEstatisticas();
-            renderizarTabela();
         }
     }
 
     function exportarCSV() {
-        if (contas.length === 0) { alert('Não há contas para exportar.'); return; }
+        if (contas.length === 0) { alert('Sem dados.'); return; }
         const headers = ['Data', 'Descrição', 'Valor (€)', 'Entidade', 'Referência', 'Liquidado'];
-        const linhas = contas.map(conta => [
-            conta.data,
-            `"${conta.descricao.replace(/"/g, '""')}"`,
-            conta.valor.toFixed(2).replace('.', ','),
-            `"${conta.entidade.replace(/"/g, '""')}"`,
-            `"${conta.referencia.replace(/"/g, '""')}"`,
-            conta.liquidado ? 'SIM' : 'NÃO'
-        ]);
-        const conteudoCSV = [headers, ...linhas].map(row => row.join(';')).join('\n');
-        const blob = new Blob(["\uFEFF" + conteudoCSV], { type: 'text/csv;charset=utf-8;' });
+        const linhas = contas.map(c => [c.data, `"${c.descricao}"`, c.valor.toFixed(2).replace('.',','), `"${c.entidade}"`, `"${c.referencia}"`, c.liquidado ? 'SIM' : 'NÃO']);
+        const csv = [headers, ...linhas].map(row => row.join(';')).join('\n');
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv' });
         const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.setAttribute('download', 'contas_a_pagar_euro.csv');
-        document.body.appendChild(link);
+        link.href = URL.createObjectURL(blob);
+        link.download = 'contas_euro.csv';
         link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(link.href);
     }
 
     function limparTudo() {
-        if (confirm('⚠️ ATENÇÃO: Isto apagará TODAS as contas. Ação irreversível. Continuar?')) {
+        if (confirm('⚠️ Apagar TODAS as contas? Sem volta.')) {
             contas = [];
             salvarDados();
             cancelarEdicao();
-            atualizarEstatisticas();
-            renderizarTabela();
         }
     }
 
@@ -720,6 +631,7 @@
         dataInput.value = hoje;
         atualizarEstatisticas();
         renderizarTabela();
+        atualizarDashboard();
         form.addEventListener('submit', salvarConta);
         btnCancelar.addEventListener('click', cancelarEdicao);
         filtroInput.addEventListener('input', aoFiltrar);
@@ -727,7 +639,6 @@
         exportarCSVBtn.addEventListener('click', exportarCSV);
         limparTudoBtn.addEventListener('click', limparTudo);
     }
-    
     init();
 </script>
 </body>
